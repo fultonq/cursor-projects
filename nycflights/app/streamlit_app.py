@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,9 +10,10 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+# Package name is nycflights_ds (sibling of app/), not nycflights.nycflights_ds.
+from bootstrap import ensure_nycflights_ds_on_path
+
+ensure_nycflights_ds_on_path()
 
 from nycflights_ds import prepare_dataset  # noqa: E402
 from nycflights_ds.config import BUNDLE_PATH, METRICS_PATH  # noqa: E402

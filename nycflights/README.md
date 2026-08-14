@@ -45,11 +45,17 @@ python -m nycflights_ds train --full
 
 ## Streamlit
 
+From the `nycflights/` directory (the folder that contains `app/` and `nycflights_ds/`):
+
 ```bash
-cd nycflights
+pip install -e ".[dev]"
 streamlit run app/streamlit_app.py
 # or: ./run_dashboard.sh
 ```
+
+`PYTHONPATH=.` is optional after the editable install. The importable package is **`nycflights_ds`**, not `nycflights.nycflights_ds`.
+
+A project `.streamlit/config.toml` disables usage-stats prompts (`headless` + `gatherUsageStats = false`).
 
 Tabs: **Overview**, **Profile & NA**, **EDA**, **Dimensionality**, **Predict**, **Model lab**.
 
