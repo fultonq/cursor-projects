@@ -1,0 +1,8 @@
+{
+  "include": ["nycflights"],
+  "exclude": ["**/__pycache__", "nycflights/.pytest_cache", "nycflights/data/raw", "nycflights/data/processed"],
+  "extraPaths": ["nycflights"],
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "basic",
+  "reportMissingImports": true
+}

@@ -26,7 +26,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler, TargetEncoder
 from sklearn.utils.class_weight import compute_sample_weight
 
-from nycflights_ds.config import (
+from .config import (
     BUNDLE_PATH,
     DELAY_THRESHOLD_MIN,
     HIGH_CARD_CATEGORICALS,
@@ -37,7 +37,7 @@ from nycflights_ds.config import (
     TEST_MONTHS,
     TRAIN_MONTHS,
 )
-from nycflights_ds.features import modeling_frame
+from .features import modeling_frame
 
 
 def time_split(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:

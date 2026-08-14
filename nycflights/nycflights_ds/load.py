@@ -8,7 +8,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nycflights_ds.config import DATA_RAW, DATA_SAMPLE, RDATASETS_BASE, TABLES
+from .config import DATA_PROCESSED, DATA_RAW, DATA_SAMPLE, RDATASETS_BASE, TABLES
 
 FLIGHT_DTYPES: dict[str, str] = {
     "year": "int16",
@@ -74,8 +74,6 @@ def load_tables(source: str | Path = "raw") -> dict[str, pd.DataFrame]:
         CSVs, or ``processed`` (single parquet produced by the pipeline).
     """
     if source == "processed":
-        from nycflights_ds.config import DATA_PROCESSED
-
         path = DATA_PROCESSED / "flights_enriched.parquet"
         if not path.exists():
             raise FileNotFoundError(f"Processed table missing: {path}")

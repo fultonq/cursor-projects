@@ -9,9 +9,9 @@ import matplotlib
 
 matplotlib.use("Agg")
 
-from nycflights_ds import prepare_dataset
-from nycflights_ds.config import DATA_PROCESSED, FIGURES_DIR, MODELS_DIR
-from nycflights_ds.eda import (
+from .config import DATA_PROCESSED, FIGURES_DIR, MODELS_DIR
+from .dimensionality import fit_pca
+from .eda import (
     kpi_summary,
     plot_cancel_rate,
     plot_carrier_ontime,
@@ -26,9 +26,9 @@ from nycflights_ds.eda import (
     plot_pca_scree,
     plot_weather_delay,
 )
-from nycflights_ds.load import download_tables, load_tables, missingness_frame, profile, write_sample
-from nycflights_ds.dimensionality import fit_pca
-from nycflights_ds.model import train_bundle
+from .load import download_tables, load_tables, missingness_frame, profile, write_sample
+from .model import train_bundle
+from .pipeline import prepare_dataset
 
 
 def _save_fig(fig, name: str) -> None:

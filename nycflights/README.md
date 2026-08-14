@@ -19,15 +19,15 @@ Delay models use a **temporal split** (train January–October, test November–
 
 ```bash
 cd nycflights
-python -m pip install -r requirements.txt
+python -m pip install -e ".[dev]"
 ```
+
+The editable install puts `nycflights_ds` on the interpreter path so IDEs (Pylance/Pyright/PyCharm) resolve `nycflights_ds.config` without `PYTHONPATH` hacks. The repo also sets `python.analysis.extraPaths` to `nycflights/` for workspace-root analysis.
 
 ## Pipeline
 
-All commands are run from `nycflights/` so the package imports resolve:
-
 ```bash
-export PYTHONPATH=.
+cd nycflights
 python -m nycflights_ds download   # CSVs from Rdatasets (nycflights13)
 python -m nycflights_ds profile    # shape, dtypes, NA, nunique
 python -m nycflights_ds prepare    # joins, NA policy, features → parquet
@@ -47,7 +47,8 @@ python -m nycflights_ds train --full
 
 ```bash
 cd nycflights
-PYTHONPATH=. streamlit run app/streamlit_app.py
+streamlit run app/streamlit_app.py
+# or: ./run_dashboard.sh
 ```
 
 Tabs: **Overview**, **Profile & NA**, **EDA**, **Dimensionality**, **Predict**, **Model lab**.
@@ -70,7 +71,7 @@ Departure delay is noisy from pre-departure features alone (weather, schedule, c
 
 ```bash
 cd nycflights
-PYTHONPATH=. pytest tests -q
+pytest tests -q
 ```
 
 ## Modeling notes

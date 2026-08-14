@@ -5,7 +5,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from nycflights_ds.clean import hhmm_to_minutes
+from .clean import hhmm_to_minutes
+from .config import ARR_DELAY_EXTRA, DEP_DELAY_FEATURES
 
 
 def _cyclical(values: np.ndarray, period: float) -> tuple[np.ndarray, np.ndarray]:
@@ -95,8 +96,6 @@ def modeling_frame(
     extra_features: tuple[str, ...] = (),
 ) -> tuple[pd.DataFrame, pd.Series]:
     """Return X, y with leakage-safe columns only. Drops cancelled/diverted rows."""
-    from nycflights_ds.config import ARR_DELAY_EXTRA, DEP_DELAY_FEATURES
-
     work = df.copy()
     if target in {"dep_delay", "dep_delayed"}:
         work = work.loc[work["operated"] & work[target].notna()]

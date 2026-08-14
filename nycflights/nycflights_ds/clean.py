@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from nycflights_ds.config import YEAR
+from .config import YEAR
 
 
 def hhmm_to_minutes(series: pd.Series) -> pd.Series:

@@ -1,0 +1,4 @@
+{
+  "python.analysis.extraPaths": ["nycflights"],
+  "python.autoComplete.extraPaths": ["nycflights"]
+}
