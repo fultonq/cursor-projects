@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Platform — All Services" type="CompoundRunConfigurationType">
+    <toRun name="config-server" type="MavenRunConfiguration" />
+    <toRun name="service-registry" type="MavenRunConfiguration" />
+    <toRun name="api-gateway" type="MavenRunConfiguration" />
+    <toRun name="auth-service" type="MavenRunConfiguration" />
+    <toRun name="employee-service" type="MavenRunConfiguration" />
+    <toRun name="payroll-service" type="MavenRunConfiguration" />
+    <toRun name="recruitment-service" type="MavenRunConfiguration" />
+    <toRun name="notification-service" type="MavenRunConfiguration" />
+    <method v="2" />
+  </configuration>
+</component>

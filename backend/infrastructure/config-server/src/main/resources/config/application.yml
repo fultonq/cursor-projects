@@ -1,0 +1,17 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+# JWT resource-server is off until Phase 2 IAM. Set hr.security.jwt.enabled=true
+# and spring.security.oauth2.resourceserver.jwt.issuer-uri when OIDC is live.
+hr:
+  security:
+    jwt:
+      enabled: false
