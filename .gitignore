@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+
+# Local data (sample under nycflights/data/sample is committed)
+nycflights/data/raw/
+nycflights/data/processed/
+
+# Streamlit agent skills (environment-specific symlinks)
+.agents/skills/developing-with-streamlit
+.claude/skills/developing-with-streamlit
+nycflights/.agents/
+nycflights/.claude/
+
+.DS_Store
