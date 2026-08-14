@@ -53,7 +53,7 @@ streamlit run app/streamlit_app.py
 # or: ./run_dashboard.sh
 ```
 
-`PYTHONPATH=.` is optional after the editable install. The importable package is **`nycflights_ds`**, not `nycflights.nycflights_ds`.
+`PYTHONPATH=.` is optional after the editable install. Imports of **`nycflights_ds`** and **`nycflights.nycflights_ds`** both resolve to the same package (a shim exists because Streamlit/IDE tools often rewrite the former to the latter).
 
 A project `.streamlit/config.toml` disables usage-stats prompts (`headless` + `gatherUsageStats = false`).
 

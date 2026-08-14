@@ -27,7 +27,7 @@ dev = ["pytest>=8.0"]
 nycflights-ds = "nycflights_ds.__main__:main"
 
 [tool.setuptools.packages.find]
-include = ["nycflights_ds*"]
+include = ["nycflights_ds*", "nycflights"]
 
 [tool.pyright]
 include = ["nycflights_ds", "app", "tests"]

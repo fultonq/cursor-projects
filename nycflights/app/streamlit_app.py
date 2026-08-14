@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import sys
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,20 +12,26 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 
-# Package name is nycflights_ds (sibling of app/), not nycflights.nycflights_ds.
-from bootstrap import ensure_nycflights_ds_on_path
+# Streamlit puts app/ on sys.path, not this project folder. PYTHONPATH=. is the
+# nycflights/ directory; the importable names are nycflights_ds and the shim
+# package nycflights.nycflights_ds (same code).
+_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
-ensure_nycflights_ds_on_path()
+from nycflights_ds.compat import install_nycflights_alias  # noqa: E402
 
-from nycflights_ds import prepare_dataset  # noqa: E402
-from nycflights_ds.config import BUNDLE_PATH, METRICS_PATH  # noqa: E402
-from nycflights_ds.dimensionality import (  # noqa: E402
+install_nycflights_alias()
+
+from nycflights.nycflights_ds import prepare_dataset  # noqa: E402
+from nycflights.nycflights_ds.config import BUNDLE_PATH, METRICS_PATH  # noqa: E402
+from nycflights.nycflights_ds.dimensionality import (  # noqa: E402
     fit_pca,
     high_correlation_pairs,
     select_k_best,
     variance_table,
 )
-from nycflights_ds.eda import (  # noqa: E402
+from nycflights.nycflights_ds.eda import (  # noqa: E402
     kpi_summary,
     plot_cancel_rate,
     plot_carrier_ontime,
@@ -38,9 +46,9 @@ from nycflights_ds.eda import (  # noqa: E402
     plot_pca_scree,
     plot_weather_delay,
 )
-from nycflights_ds.features import modeling_frame  # noqa: E402
-from nycflights_ds.load import missingness_frame  # noqa: E402
-from nycflights_ds.model import load_bundle, predict_from_row, typical_row  # noqa: E402
+from nycflights.nycflights_ds.features import modeling_frame  # noqa: E402
+from nycflights.nycflights_ds.load import missingness_frame  # noqa: E402
+from nycflights.nycflights_ds.model import load_bundle, predict_from_row, typical_row  # noqa: E402
 
 sns.set_theme(style="whitegrid", context="notebook", palette="deep")
 st.set_page_config(page_title="NYC Flights 2013", page_icon="✈️", layout="wide")
