@@ -33,4 +33,6 @@ Ports: Config `8888` · Eureka `8761` · Gateway `8080` · Auth `8081` · Employ
 
 ## Conventions
 
-See [`CLAUDE.md`](CLAUDE.md) (agent rules) and [`docs/ddd/bounded-contexts.md`](docs/ddd/bounded-contexts.md) (domain map).
+The human-facing guide is **[docs/handbook/README.md](docs/handbook/README.md)** (chapters for senior developers and managers).
+
+Also: [`CLAUDE.md`](CLAUDE.md) (agent rules), [`docs/ddd/bounded-contexts.md`](docs/ddd/bounded-contexts.md) (domain map), [`docs/mockups/README.md`](docs/mockups/README.md) (screens).

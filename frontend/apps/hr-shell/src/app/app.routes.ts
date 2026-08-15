@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 
 export const appRoutes: Route[] = [
+  { path: 'login', loadComponent: () => import('./login.component').then((m) => m.LoginComponent) },
   { path: '', loadComponent: () => import('./home.component').then((m) => m.HomeComponent) },
   {
     path: 'admin',
