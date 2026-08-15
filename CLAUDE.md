@@ -5,7 +5,7 @@ Java 21, Spring Boot 3.5, Angular 18+, Nx MF. Multi-tenant, region-sharded PG, K
 ## Trees
 - `backend/`: Maven. Services `auth|employee|payroll|recruitment|notification`. Infra `gateway|eureka|config`.
 - `frontend/`: Nx. Apps `hr-shell|admin-portal|employee-self-service`. Libs `ui|data-access|util`.
-- `docs/`: DDD + APIs. `/read` on demand; never paste into chat.
+- `docs/`: Handbook (humans), DDD, APIs. `/read` on demand; never paste into chat.
 
 ## Java
 `com.globalhr.<bc>.{api|application|domain|infrastructure}`
