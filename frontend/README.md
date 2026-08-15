@@ -13,4 +13,4 @@ npm install
 npx nx serve hr-shell
 ```
 
-Shell loads remotes at `/admin` and `/ess`. Phase 2 implements feature modules — one lib per turn.
+Shell loads remotes at `/admin` and `/ess`. Mock screens (static data) cover login, command center, directory, org, payroll, recruitment, IAM, workspace, time off, and payslips. Design comps: `docs/mockups/`.

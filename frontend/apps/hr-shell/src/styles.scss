@@ -1,1 +1,6 @@
-html, body { margin: 0; font-family: system-ui, sans-serif; }
+@import '../../../libs/ui/src/lib/styles/hr-theme';
+
+.hr-top nav a {
+  color: #dbe4f0;
+  font-size: 0.9rem;
+}
