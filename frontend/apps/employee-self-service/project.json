@@ -1,0 +1,56 @@
+{
+  "name": "employee-self-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "hr",
+  "sourceRoot": "apps/employee-self-service/src",
+  "tags": ["type:app", "scope:remote"],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:webpack-browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/employee-self-service",
+        "index": "apps/employee-self-service/src/index.html",
+        "main": "apps/employee-self-service/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/employee-self-service/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": ["apps/employee-self-service/src/favicon.ico", "apps/employee-self-service/src/assets"],
+        "styles": ["apps/employee-self-service/src/styles.scss"],
+        "customWebpackConfig": {
+          "path": "apps/employee-self-service/webpack.config.ts"
+        }
+      },
+      "configurations": {
+        "production": {
+          "customWebpackConfig": {
+            "path": "apps/employee-self-service/webpack.config.prod.ts"
+          }
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@nx/angular:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "employee-self-service:build:development",
+        "port": 4202
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "employee-self-service:build:development"
+        },
+        "production": {
+          "buildTarget": "employee-self-service:build:production"
+        }
+      }
+    }
+  }
+}

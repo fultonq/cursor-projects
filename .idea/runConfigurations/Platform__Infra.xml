@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Platform — Infra" type="CompoundRunConfigurationType">
+    <toRun name="config-server" type="MavenRunConfiguration" />
+    <toRun name="service-registry" type="MavenRunConfiguration" />
+    <toRun name="api-gateway" type="MavenRunConfiguration" />
+    <method v="2" />
+  </configuration>
+</component>

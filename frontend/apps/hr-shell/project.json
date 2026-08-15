@@ -1,0 +1,57 @@
+{
+  "name": "hr-shell",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "hr",
+  "sourceRoot": "apps/hr-shell/src",
+  "tags": ["type:app", "scope:shell"],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:webpack-browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/hr-shell",
+        "index": "apps/hr-shell/src/index.html",
+        "main": "apps/hr-shell/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/hr-shell/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": ["apps/hr-shell/src/favicon.ico", "apps/hr-shell/src/assets"],
+        "styles": ["apps/hr-shell/src/styles.scss"],
+        "customWebpackConfig": {
+          "path": "apps/hr-shell/webpack.config.ts"
+        }
+      },
+      "configurations": {
+        "production": {
+          "customWebpackConfig": {
+            "path": "apps/hr-shell/webpack.config.prod.ts"
+          }
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@nx/angular:module-federation-dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "hr-shell:build:development",
+        "port": 4200,
+        "publicHost": "http://localhost:4200"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "hr-shell:build:development"
+        },
+        "production": {
+          "buildTarget": "hr-shell:build:production"
+        }
+      }
+    }
+  }
+}

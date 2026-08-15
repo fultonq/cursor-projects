@@ -1,0 +1,53 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Node / Nx / Angular
+node_modules/
+dist/
+coverage/
+.angular/
+.nx/cache/
+.nx/workspace-data/
+.pnpm-store/
+npm-debug.log*
+yarn-error.log*
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+
+# IDE
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/httpRequests/
+.idea/dataSources/
+.idea/dataSources.local.xml
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs / env / secrets
+*.log
+*.pid
+.env
+.env.*
+!.env.example
+**/application-local.yml
+
+# Java crash dumps
+hs_err_pid*
+replay_pid*
+
+# Test output
+**/surefire-reports/
+**/failsafe-reports/
+.nyc_output/

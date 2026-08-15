@@ -1,0 +1,47 @@
+# Build
+target/
+build/
+out/
+dist/
+coverage/
+.nx/cache/
+.nx/workspace-data/
+.angular/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# VCS / IDE noise
+.git/
+**/*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+
+# Logs & dumps
+*.log
+*.pid
+hs_err_pid*
+replay_pid*
+
+# Secrets & local env
+**/.env
+**/.env.*
+!**/.env.example
+**/application-local.yml
+**/secrets/
+
+# Tests / generated
+**/jacoco/
+**/surefire-reports/
+**/failsafe-reports/
+test-output/
+.nyc_output/
+
+# Media / binaries
+*.jar
+*.war
+*.class
+*.map
