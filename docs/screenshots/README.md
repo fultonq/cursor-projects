@@ -12,6 +12,12 @@ Captured from the live static demo (`python3 deploy/web/serve.py`, then Chrome h
 | Profile modal from a table click | [directory_profile_modal.png](directory_profile_modal.png) |
 | Directory photo grid | [directory_grid.png](directory_grid.png) |
 | Profile modal from a grid click | [directory_grid_profile_modal.png](directory_grid_profile_modal.png) |
+| Page 1 · 100 per page | [directory_page1_pager.png](directory_page1_pager.png) |
+| Page 2 (101–200) | [directory_page2.png](directory_page2.png) |
+| Search Smith | [directory_search_smith.png](directory_search_smith.png) |
+| Reset filters | [directory_reset.png](directory_reset.png) |
+| Ava Watkson profile | [directory_watkson_modal.png](directory_watkson_modal.png) |
+| Grid · 100 per page | [directory_grid_100.png](directory_grid_100.png) |
 
 To recapture:
 
