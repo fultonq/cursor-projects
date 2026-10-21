@@ -8,6 +8,8 @@ Captured from the live static demo (`python3 deploy/web/serve.py`, then Chrome h
 | SSO | [login.png](login.png) |
 | Admin overview | [admin.png](admin.png) |
 | Employee self-service | [ess.png](ess.png) |
+| Directory (5,280 people) | [directory.png](directory.png) |
+| Profile modal | [directory-profile.png](directory-profile.png) |
 
 To recapture:
 

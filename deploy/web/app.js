@@ -78,7 +78,7 @@ const pages = {
       <h1 class="hr-h1">Good morning, Priya</h1>
       <p class="hr-sub">People Partner · London · EMEA shard · hosted on Render</p>
       <div class="hr-kpis">
-        <article class="hr-card hr-kpi"><span>Headcount</span><strong>25,412</strong></article>
+        <article class="hr-card hr-kpi"><span>Headcount</span><strong>${HR_DIRECTORY.total.toLocaleString("en-US")}</strong></article>
         <article class="hr-card hr-kpi"><span>Open requisitions</span><strong>186</strong></article>
         <article class="hr-card hr-kpi"><span>Payroll runs in progress</span><strong>3</strong></article>
         <article class="hr-card hr-kpi"><span>Compliance alerts</span><strong>7</strong></article>
@@ -101,9 +101,9 @@ const pages = {
           <table class="hr-table">
             <thead><tr><th>Region</th><th>Headcount</th><th>Shard</th></tr></thead>
             <tbody>
-              <tr><td>AMER</td><td>9,840</td><td>pg-amer</td></tr>
-              <tr><td>EMEA</td><td>10,205</td><td>pg-emea</td></tr>
-              <tr><td>APAC</td><td>5,367</td><td>pg-apac</td></tr>
+              <tr><td>AMER</td><td>${HR_DIRECTORY.counts.AMER.toLocaleString("en-US")}</td><td>pg-amer</td></tr>
+              <tr><td>EMEA</td><td>${HR_DIRECTORY.counts.EMEA.toLocaleString("en-US")}</td><td>pg-emea</td></tr>
+              <tr><td>APAC</td><td>${HR_DIRECTORY.counts.APAC.toLocaleString("en-US")}</td><td>pg-apac</td></tr>
             </tbody>
           </table>
         </article>
@@ -117,7 +117,7 @@ const pages = {
       <h1 class="hr-h1">Workforce operations</h1>
       <p class="hr-sub">Tenant AETHER-GLOBAL · mock data</p>
       <div class="hr-kpis">
-        <article class="hr-card hr-kpi"><span>Active employees</span><strong>25,412</strong></article>
+        <article class="hr-card hr-kpi"><span>Active employees</span><strong>${HR_DIRECTORY.total.toLocaleString("en-US")}</strong></article>
         <article class="hr-card hr-kpi"><span>New hires (30d)</span><strong>214</strong></article>
         <article class="hr-card hr-kpi"><span>Attrition</span><strong>0.8%</strong></article>
         <article class="hr-card hr-kpi"><span>Time-to-fill</span><strong>31d</strong></article>
@@ -128,9 +128,9 @@ const pages = {
           <table class="hr-table">
             <thead><tr><th>Region</th><th>Headcount</th><th>Database</th></tr></thead>
             <tbody>
-              <tr><td>AMER</td><td>9,840</td><td>hr_amer</td></tr>
-              <tr><td>EMEA</td><td>10,205</td><td>hr_emea</td></tr>
-              <tr><td>APAC</td><td>5,367</td><td>hr_apac</td></tr>
+              <tr><td>AMER</td><td>${HR_DIRECTORY.counts.AMER.toLocaleString("en-US")}</td><td>hr_amer</td></tr>
+              <tr><td>EMEA</td><td>${HR_DIRECTORY.counts.EMEA.toLocaleString("en-US")}</td><td>hr_emea</td></tr>
+              <tr><td>APAC</td><td>${HR_DIRECTORY.counts.APAC.toLocaleString("en-US")}</td><td>hr_apac</td></tr>
             </tbody>
           </table>
         </article>
@@ -152,21 +152,42 @@ const pages = {
     admin(
       "directory",
       `
-      <h1 class="hr-h1">Employee directory</h1>
-      <p class="hr-sub">25,412 records · virtualized · region EMEA</p>
-      <article class="hr-card">
-        <table class="hr-table">
-          <thead><tr><th>Employee</th><th>ID</th><th>Title</th><th>Location</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>Priya Nair</td><td>EMP-104829</td><td>People Partner</td><td>London</td><td><span class="hr-pill ok">Active</span></td></tr>
-            <tr><td>Jonas Weber</td><td>EMP-100214</td><td>VP Engineering</td><td>Berlin</td><td><span class="hr-pill ok">Active</span></td></tr>
-            <tr><td>Marcus Holm</td><td>EMP-188204</td><td>Staff Engineer</td><td>Stockholm</td><td><span class="hr-pill ok">Active</span></td></tr>
-            <tr><td>Amelia Chen</td><td>EMP-100001</td><td>Chief Executive Officer</td><td>London</td><td><span class="hr-pill ok">Active</span></td></tr>
-            <tr><td>Leila Haddad</td><td>EMP-176330</td><td>Staff Engineer</td><td>Paris</td><td><span class="hr-pill ok">Active</span></td></tr>
-            <tr><td>Sofia Alvarez</td><td>EMP-155902</td><td>Payroll Analyst</td><td>Madrid</td><td><span class="hr-pill ok">Active</span></td></tr>
-          </tbody>
-        </table>
+      <div class="hr-row" style="justify-content: space-between">
+        <div>
+          <h1 class="hr-h1">Employee directory</h1>
+          <p class="hr-sub" id="dir-sub">Loading workforce…</p>
+        </div>
+        <div class="hr-row">
+          <button class="hr-btn ghost" type="button" id="dir-export">Export page</button>
+        </div>
+      </div>
+      <div class="hr-kpis" id="dir-kpis"></div>
+      <div class="hr-row dir-filters">
+        <input class="hr-field" id="dir-q" placeholder="Search name, ID, email, title" style="max-width: 280px; margin: 0" />
+        <select class="hr-field dir-select" id="dir-region"><option value="">All regions</option><option>AMER</option><option>EMEA</option><option>APAC</option></select>
+        <select class="hr-field dir-select" id="dir-org"><option value="">All orgs</option></select>
+        <select class="hr-field dir-select" id="dir-city"><option value="">All locations</option></select>
+        <select class="hr-field dir-select" id="dir-status">
+          <option value="">All statuses</option>
+          <option>Active</option>
+          <option>Leave</option>
+          <option>Contractor</option>
+        </select>
+      </div>
+      <article class="hr-card dir-card">
+        <div class="dir-head">
+          <span></span><span>Employee</span><span>Title</span><span>Org</span><span>Location</span><span>Region</span><span>Status</span>
+        </div>
+        <div class="dir-viewport" id="dir-viewport">
+          <div id="dir-spacer"></div>
+          <div id="dir-rows"></div>
+        </div>
+        <p class="hr-sub" id="dir-foot" style="margin: 0.75rem 0 0"></p>
       </article>
+      <div class="hr-modal" id="dir-modal" hidden>
+        <div class="hr-modal-backdrop" data-close="1"></div>
+        <div class="hr-modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-name"></div>
+      </div>
     `
     ),
   "/admin/org": () =>
@@ -317,10 +338,145 @@ const pages = {
     ),
 };
 
+function statusPill(status) {
+  const kind = status === "Active" ? "ok" : status === "Leave" ? "warn" : "";
+  return `<span class="hr-pill ${kind}">${status}</span>`;
+}
+
+function photoTag(person, size) {
+  return `<img class="dir-photo" width="${size}" height="${size}" alt="${person.name}" src="${person.photo}" data-initials="${person.initials}" onerror="this.outerHTML='<span class=dir-fallback>'+this.dataset.initials+'</span>'" />`;
+}
+
+function openProfile(person) {
+  const modal = document.getElementById("dir-modal");
+  const card = modal.querySelector(".hr-modal-card");
+  card.innerHTML = `
+    <button class="hr-modal-x" type="button" data-close="1" aria-label="Close">×</button>
+    <div class="hr-modal-hero">
+      ${photoTag(person, 96)}
+      <div>
+        <h2 class="hr-h1" id="modal-name">${person.name}</h2>
+        <p class="hr-sub">${person.title} · ${person.org}</p>
+        <p class="hr-sub">${person.city} · ${person.region} shard</p>
+      </div>
+    </div>
+    <table class="hr-table">
+      <tbody>
+        <tr><td>Employee ID</td><td>${person.id}</td></tr>
+        <tr><td>Email</td><td>${person.email}</td></tr>
+        <tr><td>Phone</td><td>${person.phone}</td></tr>
+        <tr><td>Manager</td><td>${person.manager}</td></tr>
+        <tr><td>Hired</td><td>${person.hired}</td></tr>
+        <tr><td>Timezone</td><td>${person.timezone}</td></tr>
+        <tr><td>Status</td><td>${statusPill(person.status)}</td></tr>
+      </tbody>
+    </table>
+  `;
+  modal.hidden = false;
+}
+
+function initDirectory() {
+  const { employees, total, counts, cities, orgs } = HR_DIRECTORY;
+  const q = document.getElementById("dir-q");
+  const region = document.getElementById("dir-region");
+  const org = document.getElementById("dir-org");
+  const city = document.getElementById("dir-city");
+  const status = document.getElementById("dir-status");
+  const viewport = document.getElementById("dir-viewport");
+  const spacer = document.getElementById("dir-spacer");
+  const rows = document.getElementById("dir-rows");
+  const modal = document.getElementById("dir-modal");
+  orgs.forEach((name) => org.insertAdjacentHTML("beforeend", `<option>${name}</option>`));
+  cities.forEach((name) => city.insertAdjacentHTML("beforeend", `<option>${name}</option>`));
+  document.getElementById("dir-kpis").innerHTML = `
+    <article class="hr-card hr-kpi"><span>Global</span><strong>${total.toLocaleString("en-US")}</strong></article>
+    <article class="hr-card hr-kpi"><span>AMER</span><strong>${counts.AMER.toLocaleString("en-US")}</strong></article>
+    <article class="hr-card hr-kpi"><span>EMEA</span><strong>${counts.EMEA.toLocaleString("en-US")}</strong></article>
+    <article class="hr-card hr-kpi"><span>APAC</span><strong>${counts.APAC.toLocaleString("en-US")}</strong></article>
+  `;
+
+  const rowH = 72;
+  let filtered = employees;
+
+  function applyFilters() {
+    const query = q.value.trim().toLowerCase();
+    filtered = employees.filter((person) => {
+      if (region.value && person.region !== region.value) return false;
+      if (org.value && person.org !== org.value) return false;
+      if (city.value && person.city !== city.value) return false;
+      if (status.value && person.status !== status.value) return false;
+      if (!query) return true;
+      return `${person.name} ${person.id} ${person.email} ${person.title} ${person.org}`.toLowerCase().includes(query);
+    });
+    viewport.scrollTop = 0;
+    paint();
+  }
+
+  function paint() {
+    const visible = Math.ceil(viewport.clientHeight / rowH) + 6;
+    const start = Math.max(0, Math.floor(viewport.scrollTop / rowH) - 2);
+    const end = Math.min(filtered.length, start + visible);
+    spacer.style.height = `${filtered.length * rowH}px`;
+    rows.style.transform = `translateY(${start * rowH}px)`;
+    rows.innerHTML = filtered
+      .slice(start, end)
+      .map(
+        (person) => `
+      <button type="button" class="dir-row" data-id="${person.id}">
+        ${photoTag(person, 40)}
+        <span><strong>${person.name}</strong><small>${person.id}</small></span>
+        <span>${person.title}</span>
+        <span>${person.org}</span>
+        <span>${person.city}</span>
+        <span>${person.region}</span>
+        <span>${statusPill(person.status)}</span>
+      </button>`
+      )
+      .join("");
+    document.getElementById("dir-sub").textContent =
+      `${total.toLocaleString("en-US")} employees globally · photos · click a row for profile · virtualized`;
+    document.getElementById("dir-foot").textContent =
+      `Showing ${filtered.length ? start + 1 : 0}–${end} of ${filtered.length.toLocaleString("en-US")} (cursor window, no offset)`;
+  }
+
+  viewport.addEventListener("scroll", paint);
+  [q, region, org, city, status].forEach((el) => el.addEventListener("input", applyFilters));
+  rows.addEventListener("click", (event) => {
+    const row = event.target.closest("[data-id]");
+    if (!row) return;
+    const person = employees.find((item) => item.id === row.dataset.id);
+    if (person) openProfile(person);
+  });
+  modal.addEventListener("click", (event) => {
+    if (event.target.closest("[data-close]")) modal.hidden = true;
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") modal.hidden = true;
+  });
+  document.getElementById("dir-export").addEventListener("click", () => {
+    const header = "id,name,title,org,city,region,status,email\n";
+    const body = filtered
+      .slice(0, 500)
+      .map((person) => [person.id, person.name, person.title, person.org, person.city, person.region, person.status, person.email].join(","))
+      .join("\n");
+    const blob = new Blob([header + body], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    Object.assign(document.createElement("a"), { href: url, download: "directory-page.csv" }).click();
+    URL.revokeObjectURL(url);
+  });
+  applyFilters();
+  const selected = new URLSearchParams(window.location.search).get("id");
+  if (selected) {
+    const person = employees.find((item) => item.id === selected);
+    if (person) openProfile(person);
+  }
+}
+
 function render() {
   const path = window.location.pathname.replace(/\/$/, "") || "/";
   const view = pages[path] || pages["/"];
   app.innerHTML = view();
+  if (path === "/admin/directory") initDirectory();
 }
 
 document.addEventListener("click", (event) => {

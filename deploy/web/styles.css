@@ -300,6 +300,144 @@ label {
   font-size: 0.8rem;
 }
 
+.dir-filters {
+  margin-bottom: 0.85rem;
+}
+
+.dir-select {
+  width: auto;
+  margin: 0;
+  min-width: 140px;
+}
+
+.dir-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.dir-head,
+.dir-row {
+  display: grid;
+  grid-template-columns: 48px 1.4fr 1.2fr 1fr 1fr 80px 110px;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.dir-head {
+  height: 40px;
+  color: var(--hr-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--hr-line);
+}
+
+.dir-viewport {
+  position: relative;
+  height: min(62vh, 640px);
+  overflow: auto;
+}
+
+#dir-rows {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.dir-row {
+  height: 72px;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--hr-line);
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.dir-row:hover {
+  background: #f0fdfa;
+}
+
+.dir-row small {
+  display: block;
+  color: var(--hr-muted);
+  font-size: 0.75rem;
+}
+
+.dir-photo,
+.dir-fallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--hr-teal-soft);
+}
+
+.dir-fallback {
+  display: grid;
+  place-items: center;
+  color: #115e59;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.hr-modal[hidden] {
+  display: none;
+}
+
+.hr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+
+.hr-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(15 23 42 / 45%);
+}
+
+.hr-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(520px, 92vw);
+  margin: 8vh auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem 1.4rem 1.4rem;
+  box-shadow: var(--hr-shadow);
+}
+
+.hr-modal-x {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.7rem;
+  border: 0;
+  background: transparent;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--hr-muted);
+}
+
+.hr-modal-hero {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.hr-modal-hero .dir-photo,
+.hr-modal-hero .dir-fallback {
+  width: 96px;
+  height: 96px;
+  font-size: 1.4rem;
+}
+
 @media (max-width: 960px) {
   .hr-kpis,
   .hr-grid-2,
@@ -307,5 +445,15 @@ label {
   .hr-login,
   .hr-app {
     grid-template-columns: 1fr;
+  }
+
+  .dir-head,
+  .dir-row {
+    grid-template-columns: 48px 1fr 1fr;
+  }
+
+  .dir-head span:nth-child(n + 4),
+  .dir-row span:nth-child(n + 4) {
+    display: none;
   }
 }
