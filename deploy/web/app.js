@@ -158,6 +158,8 @@ const pages = {
           <p class="hr-sub" id="dir-sub">Loading workforce…</p>
         </div>
         <div class="hr-row">
+          <button class="hr-btn ghost on" type="button" id="dir-view-table">Table</button>
+          <button class="hr-btn ghost" type="button" id="dir-view-grid">Grid</button>
           <button class="hr-btn ghost" type="button" id="dir-export">Export page</button>
         </div>
       </div>
@@ -175,14 +177,16 @@ const pages = {
         </select>
       </div>
       <article class="hr-card dir-card">
-        <div class="dir-head">
+        <div class="dir-head" id="dir-head">
           <span></span><span>Employee</span><span>Title</span><span>Org</span><span>Location</span><span>Region</span><span>Status</span>
         </div>
         <div class="dir-viewport" id="dir-viewport">
           <div id="dir-spacer"></div>
           <div id="dir-rows"></div>
         </div>
-        <p class="hr-sub" id="dir-foot" style="margin: 0.75rem 0 0"></p>
+        <div class="dir-grid" id="dir-grid" hidden></div>
+        <div class="dir-pager hr-row" id="dir-pager" hidden></div>
+        <p class="hr-sub" id="dir-foot" style="margin: 0.75rem 1rem 1rem"></p>
       </article>
       <div class="hr-modal" id="dir-modal" hidden>
         <div class="hr-modal-backdrop" data-close="1"></div>
@@ -347,8 +351,30 @@ function photoTag(person, size) {
   return `<img class="dir-photo" width="${size}" height="${size}" alt="${person.name}" src="${person.photo}" data-initials="${person.initials}" onerror="this.outerHTML='<span class=dir-fallback>'+this.dataset.initials+'</span>'" />`;
 }
 
-function openProfile(person) {
+function profileHref(id) {
+  return `/admin/directory?id=${encodeURIComponent(id)}`;
+}
+
+function findEmployee(idOrName) {
+  return HR_DIRECTORY.employees.find((item) => item.id === idOrName || item.name === idOrName);
+}
+
+function managerCell(name) {
+  const manager = findEmployee(name);
+  if (!manager) return name;
+  return `<a class="dir-link" href="${profileHref(manager.id)}">${manager.name}</a>`;
+}
+
+function setProfileUrl(id) {
+  const url = id ? profileHref(id) : "/admin/directory";
+  if (`${location.pathname}${location.search}` !== url) {
+    history.pushState({ profile: id || null }, "", url);
+  }
+}
+
+function openProfile(person, { syncUrl = true } = {}) {
   const modal = document.getElementById("dir-modal");
+  if (!modal) return;
   const card = modal.querySelector(".hr-modal-card");
   card.innerHTML = `
     <button class="hr-modal-x" type="button" data-close="1" aria-label="Close">×</button>
@@ -363,9 +389,9 @@ function openProfile(person) {
     <table class="hr-table">
       <tbody>
         <tr><td>Employee ID</td><td>${person.id}</td></tr>
-        <tr><td>Email</td><td>${person.email}</td></tr>
+        <tr><td>Email</td><td><a class="dir-link" href="mailto:${person.email}">${person.email}</a></td></tr>
         <tr><td>Phone</td><td>${person.phone}</td></tr>
-        <tr><td>Manager</td><td>${person.manager}</td></tr>
+        <tr><td>Manager</td><td>${managerCell(person.manager)}</td></tr>
         <tr><td>Hired</td><td>${person.hired}</td></tr>
         <tr><td>Timezone</td><td>${person.timezone}</td></tr>
         <tr><td>Status</td><td>${statusPill(person.status)}</td></tr>
@@ -373,6 +399,14 @@ function openProfile(person) {
     </table>
   `;
   modal.hidden = false;
+  if (syncUrl) setProfileUrl(person.id);
+}
+
+function closeProfile({ syncUrl = true } = {}) {
+  const modal = document.getElementById("dir-modal");
+  if (!modal) return;
+  modal.hidden = true;
+  if (syncUrl && new URLSearchParams(location.search).get("id")) setProfileUrl(null);
 }
 
 function initDirectory() {
@@ -385,7 +419,12 @@ function initDirectory() {
   const viewport = document.getElementById("dir-viewport");
   const spacer = document.getElementById("dir-spacer");
   const rows = document.getElementById("dir-rows");
+  const grid = document.getElementById("dir-grid");
+  const pager = document.getElementById("dir-pager");
+  const head = document.getElementById("dir-head");
   const modal = document.getElementById("dir-modal");
+  const viewTable = document.getElementById("dir-view-table");
+  const viewGrid = document.getElementById("dir-view-grid");
   orgs.forEach((name) => org.insertAdjacentHTML("beforeend", `<option>${name}</option>`));
   cities.forEach((name) => city.insertAdjacentHTML("beforeend", `<option>${name}</option>`));
   document.getElementById("dir-kpis").innerHTML = `
@@ -396,7 +435,10 @@ function initDirectory() {
   `;
 
   const rowH = 72;
+  const pageSize = 48;
   let filtered = employees;
+  let view = "table";
+  let page = 0;
 
   function applyFilters() {
     const query = q.value.trim().toLowerCase();
@@ -408,11 +450,23 @@ function initDirectory() {
       if (!query) return true;
       return `${person.name} ${person.id} ${person.email} ${person.title} ${person.org}`.toLowerCase().includes(query);
     });
+    page = 0;
     viewport.scrollTop = 0;
     paint();
   }
 
-  function paint() {
+  function setView(next) {
+    view = next;
+    viewTable.classList.toggle("on", view === "table");
+    viewGrid.classList.toggle("on", view === "grid");
+    head.hidden = view !== "table";
+    viewport.hidden = view !== "table";
+    grid.hidden = view !== "grid";
+    pager.hidden = view !== "grid";
+    paint();
+  }
+
+  function paintTable() {
     const visible = Math.ceil(viewport.clientHeight / rowH) + 6;
     const start = Math.max(0, Math.floor(viewport.scrollTop / rowH) - 2);
     const end = Math.min(filtered.length, start + visible);
@@ -422,37 +476,76 @@ function initDirectory() {
       .slice(start, end)
       .map(
         (person) => `
-      <button type="button" class="dir-row" data-id="${person.id}">
+      <a class="dir-row" href="${profileHref(person.id)}">
         ${photoTag(person, 40)}
-        <span><strong>${person.name}</strong><small>${person.id}</small></span>
+        <span><strong class="dir-link">${person.name}</strong><small>${person.id}</small></span>
         <span>${person.title}</span>
         <span>${person.org}</span>
         <span>${person.city}</span>
         <span>${person.region}</span>
         <span>${statusPill(person.status)}</span>
-      </button>`
+      </a>`
       )
       .join("");
-    document.getElementById("dir-sub").textContent =
-      `${total.toLocaleString("en-US")} employees globally · photos · click a row for profile · virtualized`;
     document.getElementById("dir-foot").textContent =
-      `Showing ${filtered.length ? start + 1 : 0}–${end} of ${filtered.length.toLocaleString("en-US")} (cursor window, no offset)`;
+      `Showing ${filtered.length ? start + 1 : 0}–${end} of ${filtered.length.toLocaleString("en-US")} · click a name or row`;
   }
 
-  viewport.addEventListener("scroll", paint);
+  function paintGrid() {
+    const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    page = Math.min(page, pages - 1);
+    const start = page * pageSize;
+    const end = Math.min(filtered.length, start + pageSize);
+    grid.innerHTML = filtered
+      .slice(start, end)
+      .map(
+        (person) => `
+      <a class="dir-person" href="${profileHref(person.id)}">
+        ${photoTag(person, 88)}
+        <strong class="dir-link">${person.name}</strong>
+        <small>${person.title}</small>
+        <small>${person.city} · ${person.region}</small>
+        ${statusPill(person.status)}
+      </a>`
+      )
+      .join("");
+    pager.innerHTML = `
+      <button class="hr-btn ghost" type="button" data-page="-1" ${page === 0 ? "disabled" : ""}>Previous</button>
+      <span class="hr-sub" style="margin:0">Page ${page + 1} of ${pages.toLocaleString("en-US")}</span>
+      <button class="hr-btn ghost" type="button" data-page="1" ${page >= pages - 1 ? "disabled" : ""}>Next</button>
+    `;
+    document.getElementById("dir-foot").textContent =
+      `Showing ${filtered.length ? start + 1 : 0}–${end} of ${filtered.length.toLocaleString("en-US")} · click a card`;
+  }
+
+  function paint() {
+    document.getElementById("dir-sub").textContent =
+      `${total.toLocaleString("en-US")} employees globally · photos · hot-linked profiles`;
+    if (view === "grid") paintGrid();
+    else paintTable();
+  }
+
+  viewport.addEventListener("scroll", () => {
+    if (view === "table") paintTable();
+  });
   [q, region, org, city, status].forEach((el) => el.addEventListener("input", applyFilters));
-  rows.addEventListener("click", (event) => {
-    const row = event.target.closest("[data-id]");
-    if (!row) return;
-    const person = employees.find((item) => item.id === row.dataset.id);
-    if (person) openProfile(person);
+  viewTable.addEventListener("click", () => setView("table"));
+  viewGrid.addEventListener("click", () => setView("grid"));
+  pager.addEventListener("click", (event) => {
+    const step = Number(event.target.closest("[data-page]")?.dataset.page || 0);
+    if (!step) return;
+    page += step;
+    paintGrid();
   });
   modal.addEventListener("click", (event) => {
-    if (event.target.closest("[data-close]")) modal.hidden = true;
+    if (event.target.closest("[data-close]")) closeProfile();
   });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") modal.hidden = true;
-  });
+  if (!window.__hrEscBound) {
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeProfile();
+    });
+    window.__hrEscBound = true;
+  }
   document.getElementById("dir-export").addEventListener("click", () => {
     const header = "id,name,title,org,city,region,status,email\n";
     const body = filtered
@@ -467,8 +560,8 @@ function initDirectory() {
   applyFilters();
   const selected = new URLSearchParams(window.location.search).get("id");
   if (selected) {
-    const person = employees.find((item) => item.id === selected);
-    if (person) openProfile(person);
+    const person = findEmployee(selected);
+    if (person) openProfile(person, { syncUrl: false });
   }
 }
 
@@ -482,8 +575,19 @@ function render() {
 document.addEventListener("click", (event) => {
   const link = event.target.closest("a[href^='/']");
   if (!link || event.metaKey || event.ctrlKey) return;
+  const href = link.getAttribute("href");
+  const next = new URL(href, window.location.origin);
+  const here = window.location.pathname.replace(/\/$/, "") || "/";
+  const there = next.pathname.replace(/\/$/, "") || "/";
+  const profileId = next.searchParams.get("id");
+  if (here === "/admin/directory" && there === "/admin/directory" && profileId) {
+    event.preventDefault();
+    const person = findEmployee(profileId);
+    if (person) openProfile(person);
+    return;
+  }
   event.preventDefault();
-  history.pushState({}, "", link.getAttribute("href"));
+  history.pushState({}, "", href);
   render();
 });
 
