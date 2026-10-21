@@ -13,6 +13,10 @@ The live demo is a **static site** of the Aether HR mock screens (login, admin, 
 
 Render will create a static site named `aether-hr` and give it a URL like `https://aether-hr.onrender.com`.
 
+## Screenshots of the running demo
+
+See [`docs/screenshots/`](screenshots/README.md) — command center, SSO, admin, and self-service, taken from the live local server.
+
 ## What gets deployed
 
 | Resource | Type | Source |
