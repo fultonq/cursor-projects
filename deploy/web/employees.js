@@ -14,6 +14,8 @@
     "Cole", "Mehta", "Kim", "Patel", "Nguyen", "Silva", "Johansson", "Dubois", "Kowalski", "Okafor",
     "Tanaka", "Berg", "Costa", "Murphy", "Khan", "Petrov", "Garcia", "Andersen", "Singh", "Moreau",
     "Nakamura", "Novak", "Fernandez", "Osei", "Williams", "Santos", "Lindqvist", "Park", "Rahman", "Bennett",
+    "Smith", "Smythe", "Johnson", "Moore", "Jackson", "Cruze", "Hernandez", "Pohl", "Dennis", "Mayfield",
+    "Anderson", "Bergman", "Reddings", "Lewis", "Olson", "Miller", "Brown", "Daniels", "Watkson", "Russell",
   ];
   const REGIONS = {
     AMER: {
@@ -62,6 +64,27 @@
       { first: "Sofia", last: "Alvarez", female: true, title: "Payroll Analyst", org: "Compensation", city: "Madrid", region: "EMEA", manager: "Priya Nair" },
       { first: "Kenji", last: "Sato", female: false, title: "Engineering Manager", org: "Product Engineering", city: "London", region: "EMEA", manager: "Jonas Weber" },
       { first: "Nora", last: "Ibrahim", female: true, title: "Recruiter", org: "Talent", city: "Dubai", region: "EMEA", manager: "Priya Nair" },
+      { first: "Hannah", last: "Smith", female: true, title: "People Ops Analyst", org: "People", city: "Chicago", region: "AMER", manager: "Priya Nair" },
+      { first: "Owen", last: "Smythe", female: false, title: "Staff Engineer", org: "Product Engineering", city: "London", region: "EMEA", manager: "Jonas Weber" },
+      { first: "Aisha", last: "Johnson", female: true, title: "Recruiter", org: "Talent", city: "New York", region: "AMER", manager: "Priya Nair" },
+      { first: "James", last: "Moore", female: false, title: "Financial Analyst", org: "Finance", city: "Austin", region: "AMER", manager: "Amelia Chen" },
+      { first: "Mia", last: "Jackson", female: true, title: "CSM", org: "Customer Success", city: "Seattle", region: "AMER", manager: "Priya Nair" },
+      { first: "Diego", last: "Cruze", female: false, title: "Account Executive", org: "Sales", city: "Mexico City", region: "AMER", manager: "Amelia Chen" },
+      { first: "Camila", last: "Hernandez", female: true, title: "Payroll Analyst", org: "Compensation", city: "São Paulo", region: "AMER", manager: "Sofia Alvarez" },
+      { first: "Erik", last: "Pohl", female: false, title: "SRE", org: "Platform", city: "Berlin", region: "EMEA", manager: "Jonas Weber" },
+      { first: "Chloe", last: "Dennis", female: true, title: "Talent Partner", org: "Talent", city: "Dublin", region: "EMEA", manager: "Priya Nair" },
+      { first: "Samuel", last: "Mayfield", female: false, title: "Engineering Manager", org: "Product Engineering", city: "Denver", region: "AMER", manager: "Jonas Weber" },
+      { first: "Elena", last: "Anderson", female: true, title: "HRBP", org: "People", city: "Toronto", region: "AMER", manager: "Priya Nair" },
+      { first: "Lukas", last: "Bergman", female: false, title: "Data Scientist", org: "Data", city: "Stockholm", region: "EMEA", manager: "Jonas Weber" },
+      { first: "Olivia", last: "Reddings", female: true, title: "Counsel", org: "Legal", city: "London", region: "EMEA", manager: "Amelia Chen" },
+      { first: "Noah", last: "Lewis", female: false, title: "Security Engineer", org: "Security", city: "Sydney", region: "APAC", manager: "Jonas Weber" },
+      { first: "Freya", last: "Olson", female: true, title: "Ops Manager", org: "Operations", city: "Stockholm", region: "EMEA", manager: "Priya Nair" },
+      { first: "Daniel", last: "Miller", female: false, title: "Controller", org: "Finance", city: "Chicago", region: "AMER", manager: "Amelia Chen" },
+      { first: "Emma", last: "Brown", female: true, title: "Onboarding Manager", org: "Customer Success", city: "New York", region: "AMER", manager: "Priya Nair" },
+      { first: "Theo", last: "Daniels", female: false, title: "Platform Engineer", org: "Platform", city: "Austin", region: "AMER", manager: "Jonas Weber" },
+      { first: "Ava", last: "Watkson", female: true, title: "Analytics Engineer", org: "Data", city: "Seattle", region: "AMER", manager: "Jonas Weber" },
+      { first: "Alexander", last: "Russell", female: false, title: "Sales Manager", org: "Sales", city: "London", region: "EMEA", manager: "Amelia Chen" },
+      { first: "Lina", last: "Williams", female: true, title: "Benefits Specialist", org: "Compensation", city: "Toronto", region: "AMER", manager: "Sofia Alvarez" },
     ];
 
     const out = [];

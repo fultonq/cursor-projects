@@ -175,17 +175,17 @@ const pages = {
           <option>Leave</option>
           <option>Contractor</option>
         </select>
+        <button class="hr-btn ghost" type="button" id="dir-reset">Reset</button>
       </div>
       <article class="hr-card dir-card">
         <div class="dir-head" id="dir-head">
           <span></span><span>Employee</span><span>Title</span><span>Org</span><span>Location</span><span>Region</span><span>Status</span>
         </div>
         <div class="dir-viewport" id="dir-viewport">
-          <div id="dir-spacer"></div>
           <div id="dir-rows"></div>
         </div>
         <div class="dir-grid" id="dir-grid" hidden></div>
-        <div class="dir-pager hr-row" id="dir-pager" hidden></div>
+        <div class="dir-pager hr-row" id="dir-pager"></div>
         <p class="hr-sub" id="dir-foot" style="margin: 0.75rem 1rem 1rem"></p>
       </article>
       <div class="hr-modal" id="dir-modal" hidden>
@@ -417,7 +417,6 @@ function initDirectory() {
   const city = document.getElementById("dir-city");
   const status = document.getElementById("dir-status");
   const viewport = document.getElementById("dir-viewport");
-  const spacer = document.getElementById("dir-spacer");
   const rows = document.getElementById("dir-rows");
   const grid = document.getElementById("dir-grid");
   const pager = document.getElementById("dir-pager");
@@ -434,8 +433,7 @@ function initDirectory() {
     <article class="hr-card hr-kpi"><span>APAC</span><strong>${counts.APAC.toLocaleString("en-US")}</strong></article>
   `;
 
-  const rowH = 72;
-  const pageSize = 48;
+  const PAGE_SIZE = 100;
   let filtered = employees;
   let view = "table";
   let page = 0;
@@ -448,11 +446,41 @@ function initDirectory() {
       if (city.value && person.city !== city.value) return false;
       if (status.value && person.status !== status.value) return false;
       if (!query) return true;
-      return `${person.name} ${person.id} ${person.email} ${person.title} ${person.org}`.toLowerCase().includes(query);
+      return `${person.name} ${person.id} ${person.email} ${person.title} ${person.org} ${person.last}`.toLowerCase().includes(query);
     });
     page = 0;
     viewport.scrollTop = 0;
     paint();
+  }
+
+  function resetFilters() {
+    q.value = "";
+    region.value = "";
+    org.value = "";
+    city.value = "";
+    status.value = "";
+    applyFilters();
+  }
+
+  function pageWindow() {
+    const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    page = Math.min(Math.max(0, page), pages - 1);
+    const start = page * PAGE_SIZE;
+    const end = Math.min(filtered.length, start + PAGE_SIZE);
+    return { start, end, pages };
+  }
+
+  function paintPager({ start, end, pages }) {
+    pager.innerHTML = `
+      <button class="hr-btn ghost" type="button" data-page="first" ${page === 0 ? "disabled" : ""}>First</button>
+      <button class="hr-btn ghost" type="button" data-page="-1" ${page === 0 ? "disabled" : ""}>Previous</button>
+      <span class="hr-sub" style="margin:0">Page ${page + 1} of ${pages.toLocaleString("en-US")} · ${PAGE_SIZE} per page</span>
+      <button class="hr-btn ghost" type="button" data-page="1" ${page >= pages - 1 ? "disabled" : ""}>Next</button>
+      <button class="hr-btn ghost" type="button" data-page="last" ${page >= pages - 1 ? "disabled" : ""}>Last</button>
+    `;
+    const hint = view === "grid" ? "click a card" : "click a name or row";
+    document.getElementById("dir-foot").textContent =
+      `Showing ${filtered.length ? start + 1 : 0}–${end} of ${filtered.length.toLocaleString("en-US")} · ${PAGE_SIZE} loaded · ${hint}`;
   }
 
   function setView(next) {
@@ -462,16 +490,11 @@ function initDirectory() {
     head.hidden = view !== "table";
     viewport.hidden = view !== "table";
     grid.hidden = view !== "grid";
-    pager.hidden = view !== "grid";
     paint();
   }
 
   function paintTable() {
-    const visible = Math.ceil(viewport.clientHeight / rowH) + 6;
-    const start = Math.max(0, Math.floor(viewport.scrollTop / rowH) - 2);
-    const end = Math.min(filtered.length, start + visible);
-    spacer.style.height = `${filtered.length * rowH}px`;
-    rows.style.transform = `translateY(${start * rowH}px)`;
+    const { start, end, pages } = pageWindow();
     rows.innerHTML = filtered
       .slice(start, end)
       .map(
@@ -487,15 +510,11 @@ function initDirectory() {
       </a>`
       )
       .join("");
-    document.getElementById("dir-foot").textContent =
-      `Showing ${filtered.length ? start + 1 : 0}–${end} of ${filtered.length.toLocaleString("en-US")} · click a name or row`;
+    paintPager({ start, end, pages });
   }
 
   function paintGrid() {
-    const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
-    page = Math.min(page, pages - 1);
-    const start = page * pageSize;
-    const end = Math.min(filtered.length, start + pageSize);
+    const { start, end, pages } = pageWindow();
     grid.innerHTML = filtered
       .slice(start, end)
       .map(
@@ -509,33 +528,29 @@ function initDirectory() {
       </a>`
       )
       .join("");
-    pager.innerHTML = `
-      <button class="hr-btn ghost" type="button" data-page="-1" ${page === 0 ? "disabled" : ""}>Previous</button>
-      <span class="hr-sub" style="margin:0">Page ${page + 1} of ${pages.toLocaleString("en-US")}</span>
-      <button class="hr-btn ghost" type="button" data-page="1" ${page >= pages - 1 ? "disabled" : ""}>Next</button>
-    `;
-    document.getElementById("dir-foot").textContent =
-      `Showing ${filtered.length ? start + 1 : 0}–${end} of ${filtered.length.toLocaleString("en-US")} · click a card`;
+    paintPager({ start, end, pages });
   }
 
   function paint() {
     document.getElementById("dir-sub").textContent =
-      `${total.toLocaleString("en-US")} employees globally · photos · hot-linked profiles`;
+      `${total.toLocaleString("en-US")} employees globally · 100 per page · photos · hot-linked profiles`;
     if (view === "grid") paintGrid();
     else paintTable();
   }
 
-  viewport.addEventListener("scroll", () => {
-    if (view === "table") paintTable();
-  });
   [q, region, org, city, status].forEach((el) => el.addEventListener("input", applyFilters));
+  document.getElementById("dir-reset").addEventListener("click", resetFilters);
   viewTable.addEventListener("click", () => setView("table"));
   viewGrid.addEventListener("click", () => setView("grid"));
   pager.addEventListener("click", (event) => {
-    const step = Number(event.target.closest("[data-page]")?.dataset.page || 0);
-    if (!step) return;
-    page += step;
-    paintGrid();
+    const action = event.target.closest("[data-page]")?.dataset.page;
+    if (!action) return;
+    const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (action === "first") page = 0;
+    else if (action === "last") page = pages - 1;
+    else page += Number(action);
+    viewport.scrollTop = 0;
+    paint();
   });
   modal.addEventListener("click", (event) => {
     if (event.target.closest("[data-close]")) closeProfile();
@@ -548,8 +563,9 @@ function initDirectory() {
   }
   document.getElementById("dir-export").addEventListener("click", () => {
     const header = "id,name,title,org,city,region,status,email\n";
+    const { start, end } = pageWindow();
     const body = filtered
-      .slice(0, 500)
+      .slice(start, end)
       .map((person) => [person.id, person.name, person.title, person.org, person.city, person.region, person.status, person.email].join(","))
       .join("\n");
     const blob = new Blob([header + body], { type: "text/csv" });

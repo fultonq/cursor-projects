@@ -346,16 +346,12 @@ label {
 }
 
 .dir-viewport {
-  position: relative;
   height: min(62vh, 640px);
   overflow: auto;
 }
 
 #dir-rows {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  min-height: 1px;
 }
 
 .dir-row {
@@ -424,7 +420,8 @@ label {
 
 .dir-pager {
   justify-content: center;
-  padding: 0 1rem 0.25rem;
+  padding: 0.85rem 1rem 0.35rem;
+  border-top: 1px solid var(--hr-line);
 }
 
 .dir-row small {
