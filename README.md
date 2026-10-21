@@ -31,6 +31,10 @@ cd frontend && npm install && npx nx serve hr-shell
 
 Ports: Config `8888` · Eureka `8761` · Gateway `8080` · Auth `8081` · Employee `8082` · Payroll `8083` · Recruitment `8084` · Notification `8085` · Shell `4200`.
 
+## Hosted demo (Render)
+
+Static mock of the three apps: connect this repo as a [Render Blueprint](https://dashboard.render.com/blueprint/new) using `render.yaml`. Steps: [`docs/deploy-render.md`](docs/deploy-render.md).
+
 ## Conventions
 
 See [`CLAUDE.md`](CLAUDE.md) (agent rules) and [`docs/ddd/bounded-contexts.md`](docs/ddd/bounded-contexts.md) (domain map).
