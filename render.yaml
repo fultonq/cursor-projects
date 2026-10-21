@@ -1,6 +1,5 @@
 # Render Blueprint — Aether HR demo
-# Connect this repo in the Render dashboard: New → Blueprint
-# https://dashboard.render.com/blueprint/new
+# Static sites are on a global CDN: no region or compute plan.
 
 previews:
   generation: automatic
@@ -9,9 +8,6 @@ services:
   - type: web
     name: aether-hr
     runtime: static
-    plan: free
-    region: oregon
-    branch: cursor/hr-platform-render-be44
     buildCommand: "true"
     staticPublishPath: ./deploy/web
     headers:

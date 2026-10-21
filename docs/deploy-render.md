@@ -11,6 +11,8 @@ The live demo is a **static site** of the Aether HR mock screens (login, admin, 
    - **Branch:** `cursor/hr-platform-render-be44` (or `main` after this PR merges)
 4. Click **Deploy Blueprint**.
 
+Static sites have no `region` or compute `plan` in the Blueprint (they run on Render’s CDN). If you still have the old file open, refresh after this push.
+
 Render will create a static site named `aether-hr` and give it a URL like `https://aether-hr.onrender.com`.
 
 ## Screenshots of the running demo
