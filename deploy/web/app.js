@@ -310,14 +310,53 @@ const pages = {
     ess(
       "time",
       `
-      <h1 class="hr-h1">Time off</h1>
-      <p class="hr-sub">Approver: Jonas Weber · balance 18.5 days</p>
-      <article class="hr-card">
-        <label>Type</label>
-        <input class="hr-field" value="Vacation" readonly />
-        <label>Dates</label>
-        <input class="hr-field" value="8 Sep 2026 – 12 Sep 2026" readonly />
-        <button class="hr-btn" type="button">Submit request</button>
+      <h1 class="hr-h1">Request time off</h1>
+      <p class="hr-sub">Marcus Holm · Staff Engineer · Approver Jonas Weber</p>
+      <div class="hr-kpis" id="pto-kpis"></div>
+      <article class="hr-card pto-card">
+        <div class="hr-row pto-kinds">
+          <button class="hr-btn ghost on" type="button" id="pto-kind-leave">Time off</button>
+          <button class="hr-btn ghost" type="button" id="pto-kind-work">Flex / Remote / Hybrid</button>
+        </div>
+        <div id="pto-leave-fields">
+          <label for="pto-type">Time off type</label>
+          <select class="hr-field" id="pto-type">
+            <option>Vacation</option>
+            <option>Sick</option>
+            <option>Personal Time off (PTO)</option>
+            <option>Volunteer</option>
+            <option>Purchase time off</option>
+            <option>Jury Duty</option>
+            <option>Bereavement</option>
+            <option>Parental leave</option>
+            <option>Unpaid leave</option>
+          </select>
+        </div>
+        <fieldset class="pto-work" id="pto-work-fields" hidden>
+          <legend>Work arrangement</legend>
+          <label class="pto-choice"><input type="radio" name="pto-work" value="Flex-Time" checked /> Flex-Time</label>
+          <label class="pto-choice"><input type="radio" name="pto-work" value="Remote work" /> Remote work</label>
+          <label class="pto-choice"><input type="radio" name="pto-work" value="Hybrid" /> Hybrid</label>
+        </fieldset>
+        <div class="pto-dates">
+          <div>
+            <label for="pto-start">Start date</label>
+            <input class="hr-field" id="pto-start" type="date" value="2026-09-08" />
+          </div>
+          <div>
+            <label for="pto-end">End date</label>
+            <input class="hr-field" id="pto-end" type="date" value="2026-09-12" />
+          </div>
+        </div>
+        <label class="pto-choice" for="pto-half"><input id="pto-half" type="checkbox" /> First day is a half day</label>
+        <label for="pto-note">Note to approver</label>
+        <textarea class="hr-field" id="pto-note" rows="3" placeholder="Optional context for Jonas Weber"></textarea>
+        <div class="pto-balance" id="pto-balance"></div>
+        <div class="hr-row">
+          <button class="hr-btn" type="button" id="pto-submit">Submit request</button>
+          <button class="hr-btn ghost" type="button" id="pto-clear">Reset form</button>
+        </div>
+        <p class="pto-result" id="pto-result" hidden></p>
       </article>
     `
     ),
@@ -594,11 +633,144 @@ function initDirectory() {
   }
 }
 
+const PTO_BANKS = {
+  Vacation: { days: 18.5, deducts: true },
+  Sick: { days: 10, deducts: true },
+  "Personal Time off (PTO)": { days: 5, deducts: true },
+  Volunteer: { days: 2, deducts: true },
+  "Purchase time off": { days: 3, deducts: true },
+  "Jury Duty": { days: Infinity, deducts: false },
+  Bereavement: { days: 5, deducts: true },
+  "Parental leave": { days: 90, deducts: true },
+  "Unpaid leave": { days: Infinity, deducts: false },
+  "Flex-Time": { days: null, deducts: false },
+  "Remote work": { days: null, deducts: false },
+  Hybrid: { days: null, deducts: false },
+};
+
+function parseYmd(value) {
+  if (!value) return null;
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function workingDays(startValue, endValue, halfFirst) {
+  const start = parseYmd(startValue);
+  const end = parseYmd(endValue);
+  if (!start || !end || end < start) return 0;
+  let days = 0;
+  for (let cursor = new Date(start); cursor <= end; cursor.setDate(cursor.getDate() + 1)) {
+    const weekday = cursor.getDay();
+    if (weekday !== 0 && weekday !== 6) days += 1;
+  }
+  if (halfFirst && days > 0) days -= 0.5;
+  return days;
+}
+
+function formatDays(days) {
+  if (days === Infinity) return "Unlimited";
+  return `${Number(days).toLocaleString("en-US", { minimumFractionDigits: days % 1 ? 1 : 0, maximumFractionDigits: 1 })}d`;
+}
+
+function initTimeOff() {
+  const kindLeave = document.getElementById("pto-kind-leave");
+  const kindWork = document.getElementById("pto-kind-work");
+  const leaveFields = document.getElementById("pto-leave-fields");
+  const workFields = document.getElementById("pto-work-fields");
+  const type = document.getElementById("pto-type");
+  const start = document.getElementById("pto-start");
+  const end = document.getElementById("pto-end");
+  const half = document.getElementById("pto-half");
+  const note = document.getElementById("pto-note");
+  const result = document.getElementById("pto-result");
+  let kind = "leave";
+
+  document.getElementById("pto-kpis").innerHTML = `
+    <article class="hr-card hr-kpi"><span>Vacation</span><strong>${formatDays(PTO_BANKS.Vacation.days)}</strong></article>
+    <article class="hr-card hr-kpi"><span>Sick</span><strong>${formatDays(PTO_BANKS.Sick.days)}</strong></article>
+    <article class="hr-card hr-kpi"><span>PTO</span><strong>${formatDays(PTO_BANKS["Personal Time off (PTO)"].days)}</strong></article>
+    <article class="hr-card hr-kpi"><span>Volunteer</span><strong>${formatDays(PTO_BANKS.Volunteer.days)}</strong></article>
+  `;
+
+  function selectedType() {
+    if (kind === "work") {
+      return document.querySelector('input[name="pto-work"]:checked')?.value || "Flex-Time";
+    }
+    return type.value;
+  }
+
+  function paintBalance() {
+    const name = selectedType();
+    const bank = PTO_BANKS[name];
+    const requested = workingDays(start.value, end.value, half.checked);
+    const invalid = !start.value || !end.value || parseYmd(end.value) < parseYmd(start.value);
+    const remaining = bank.days == null || bank.days === Infinity ? bank.days : bank.days - requested;
+    const over = bank.deducts && remaining !== Infinity && remaining < 0;
+    let body;
+    if (invalid) {
+      body = `<p class="hr-sub" style="margin:0">Choose a start date on or before the end date to calculate balance.</p>`;
+    } else if (!bank.deducts) {
+      body = `
+        <p><strong>${formatDays(requested)}</strong> working days as <strong>${name}</strong></p>
+        <p class="hr-sub" style="margin:0.35rem 0 0">This arrangement does not deduct leave. Vacation balance stays ${formatDays(PTO_BANKS.Vacation.days)}.</p>
+      `;
+    } else {
+      body = `
+        <div class="pto-calc">
+          <div><span>Available balance</span><strong>${formatDays(bank.days)}</strong></div>
+          <div><span>Requested</span><strong>${formatDays(requested)}</strong></div>
+          <div><span>Remaining</span><strong class="${over ? "pto-over" : ""}">${formatDays(remaining)}</strong></div>
+        </div>
+        <p class="hr-sub" style="margin:0.55rem 0 0">${over ? "Requested days exceed the available balance." : `Working days only · weekends excluded · ${name}`}</p>
+      `;
+    }
+    document.getElementById("pto-balance").innerHTML = `<h3>Balance</h3>${body}`;
+    document.getElementById("pto-submit").disabled = invalid || requested <= 0 || over;
+  }
+
+  function setKind(next) {
+    kind = next;
+    kindLeave.classList.toggle("on", kind === "leave");
+    kindWork.classList.toggle("on", kind === "work");
+    leaveFields.hidden = kind !== "leave";
+    workFields.hidden = kind !== "work";
+    result.hidden = true;
+    paintBalance();
+  }
+
+  kindLeave.addEventListener("click", () => setKind("leave"));
+  kindWork.addEventListener("click", () => setKind("work"));
+  [type, start, end, half].forEach((el) => el.addEventListener("input", paintBalance));
+  workFields.addEventListener("input", paintBalance);
+  document.getElementById("pto-clear").addEventListener("click", () => {
+    type.value = "Vacation";
+    start.value = "2026-09-08";
+    end.value = "2026-09-12";
+    half.checked = false;
+    note.value = "";
+    document.querySelector('input[name="pto-work"][value="Flex-Time"]').checked = true;
+    result.hidden = true;
+    setKind("leave");
+  });
+  document.getElementById("pto-submit").addEventListener("click", () => {
+    const name = selectedType();
+    const requested = workingDays(start.value, end.value, half.checked);
+    const bank = PTO_BANKS[name];
+    const remaining = bank.days == null || bank.days === Infinity ? "unchanged" : formatDays(bank.days - requested);
+    result.hidden = false;
+    result.textContent = bank.deducts
+      ? `Submitted ${formatDays(requested)} ${name} · remaining ${remaining} · pending Jonas Weber`
+      : `Submitted ${name} for ${formatDays(requested)} · leave balance unchanged · pending Jonas Weber`;
+  });
+  paintBalance();
+}
+
 function render() {
   const path = window.location.pathname.replace(/\/$/, "") || "/";
   const view = pages[path] || pages["/"];
   app.innerHTML = view();
   if (path === "/admin/directory") initDirectory();
+  if (path === "/ess/time-off") initTimeOff();
 }
 
 document.addEventListener("click", (event) => {
