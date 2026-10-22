@@ -21,6 +21,10 @@ Captured from the live static demo (`python3 deploy/web/serve.py`, then Chrome h
 | Priya profile with department, salary, credentials, social | [directory_priya_profile_fields.png](directory_priya_profile_fields.png) |
 | Ava profile extra fields | [directory_watkson_profile_fields.png](directory_watkson_profile_fields.png) |
 | Diego Cruze MXN salary | [directory_cruze_profile_fields.png](directory_cruze_profile_fields.png) |
+| Time-off Vacation balance | [ess_time_off_vacation_balance.png](ess_time_off_vacation_balance.png) |
+| Time-off Jury Duty | [ess_time_off_jury_duty.png](ess_time_off_jury_duty.png) |
+| Remote work (no leave deduction) | [ess_time_off_remote.png](ess_time_off_remote.png) |
+| Time-off submitted | [ess_time_off_submitted.png](ess_time_off_submitted.png) |
 
 To recapture:
 
