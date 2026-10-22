@@ -1,0 +1,235 @@
+(() => {
+  const FIRST_F = [
+    "Priya", "Amelia", "Leila", "Sofia", "Nora", "Mia", "Hannah", "Aisha", "Elena", "Yuki",
+    "Fatima", "Ingrid", "Chloe", "Mei", "Lucia", "Anya", "Sara", "Camila", "Hana", "Freya",
+    "Zara", "Isabelle", "Nia", "Priyanka", "Olivia", "Emma", "Ava", "Amara", "Lina", "Noor",
+  ];
+  const FIRST_M = [
+    "Jonas", "Marcus", "Kenji", "Owen", "Arjun", "Diego", "Lukas", "Wei", "Noah", "Omar",
+    "Andre", "Hiroshi", "Samuel", "Mateo", "Ibrahim", "Erik", "Raj", "Theo", "James", "Leo",
+    "Daniel", "Carlos", "Minh", "Kwame", "Alexander", "Ben", "Hugo", "Soren", "Adrian", "Kai",
+  ];
+  const LAST = [
+    "Nair", "Weber", "Holm", "Chen", "Haddad", "Alvarez", "Sato", "Ibrahim", "Blake", "Rossi",
+    "Cole", "Mehta", "Kim", "Patel", "Nguyen", "Silva", "Johansson", "Dubois", "Kowalski", "Okafor",
+    "Tanaka", "Berg", "Costa", "Murphy", "Khan", "Petrov", "Garcia", "Andersen", "Singh", "Moreau",
+    "Nakamura", "Novak", "Fernandez", "Osei", "Williams", "Santos", "Lindqvist", "Park", "Rahman", "Bennett",
+    "Smith", "Smythe", "Johnson", "Moore", "Jackson", "Cruze", "Hernandez", "Pohl", "Dennis", "Mayfield",
+    "Anderson", "Bergman", "Reddings", "Lewis", "Olson", "Miller", "Brown", "Daniels", "Watkson", "Russell",
+  ];
+  const REGIONS = {
+    AMER: {
+      cities: ["New York", "Austin", "Chicago", "Toronto", "São Paulo", "Seattle", "Denver", "Mexico City"],
+      tz: ["America/New_York", "America/Chicago", "America/Sao_Paulo", "America/Toronto", "America/Denver"],
+    },
+    EMEA: {
+      cities: ["London", "Berlin", "Paris", "Stockholm", "Madrid", "Dubai", "Amsterdam", "Dublin", "Warsaw"],
+      tz: ["Europe/London", "Europe/Berlin", "Europe/Paris", "Europe/Stockholm", "Asia/Dubai"],
+    },
+    APAC: {
+      cities: ["Singapore", "Tokyo", "Sydney", "Bengaluru", "Seoul", "Hong Kong", "Melbourne", "Jakarta"],
+      tz: ["Asia/Singapore", "Asia/Tokyo", "Australia/Sydney", "Asia/Kolkata", "Asia/Seoul"],
+    },
+  };
+  const ORGS = [
+    "People", "Product Engineering", "Platform", "Compensation", "Talent",
+    "Finance", "Legal", "Sales", "Customer Success", "Operations", "Security", "Data",
+  ];
+  const DEPARTMENTS = {
+    People: ["People Operations", "Total Rewards", "Employee Relations", "Learning & Development"],
+    "Product Engineering": ["Core Platform", "Mobile Apps", "Web Experience", "Quality Engineering"],
+    Platform: ["SRE", "Cloud Infrastructure", "Developer Experience"],
+    Compensation: ["Payroll Operations", "Benefits Administration", "Global Mobility"],
+    Talent: ["Talent Acquisition", "University Recruiting", "Employer Brand"],
+    Finance: ["FP&A", "Controllership", "Treasury"],
+    Legal: ["Corporate Legal", "Compliance", "Employment Law"],
+    Sales: ["Enterprise Sales", "Mid-Market", "Solutions Consulting"],
+    "Customer Success": ["Named Accounts", "Onboarding", "Support Operations"],
+    Operations: ["Workplace", "Program Management", "Business Operations"],
+    Security: ["Product Security", "GRC", "SOC"],
+    Data: ["Data Platform", "Analytics", "Machine Learning"],
+    "Office of the CEO": ["Executive Office"],
+  };
+  const CREDENTIALS = {
+    People: ["BA Human Resources", "CIPD Level 7", "SHRM-SCP"],
+    "Product Engineering": ["BSc Computer Science", "AWS Solutions Architect", "MSc Software Engineering"],
+    Platform: ["BEng Computer Engineering", "CKA (Kubernetes)", "Google Professional Cloud Architect"],
+    Compensation: ["BSc Accounting", "CPP (Certified Payroll Professional)", "Diploma in Compensation"],
+    Talent: ["BA Communications", "AIRS Certified Recruiter", "LinkedIn Recruiter Certification"],
+    Finance: ["BSc Finance", "CPA", "MBA"],
+    Legal: ["LLB", "Bar admission", "CIPP/E"],
+    Sales: ["BBA", "MEDDICC practitioner", "Salesforce Certified"],
+    "Customer Success": ["BA Business", "CCSP", "ITIL Foundation"],
+    Operations: ["BSc Operations Management", "PMP", "Lean Six Sigma Green Belt"],
+    Security: ["BSc Cybersecurity", "CISSP", "OSCP"],
+    Data: ["MSc Data Science", "Google Data Analytics Certificate", "dbt Analytics Engineer"],
+    "Office of the CEO": ["MBA Harvard", "BSc Economics", "ICD.D"],
+  };
+  const CITY_PAY = {
+    "New York": ["USD", "en-US", 1],
+    Austin: ["USD", "en-US", 1],
+    Chicago: ["USD", "en-US", 1],
+    Seattle: ["USD", "en-US", 1],
+    Denver: ["USD", "en-US", 1],
+    Toronto: ["CAD", "en-CA", 1.36],
+    "São Paulo": ["BRL", "pt-BR", 5.2],
+    "Mexico City": ["MXN", "es-MX", 17],
+    London: ["GBP", "en-GB", 0.78],
+    Dublin: ["EUR", "en-IE", 0.92],
+    Berlin: ["EUR", "de-DE", 0.92],
+    Paris: ["EUR", "fr-FR", 0.92],
+    Madrid: ["EUR", "es-ES", 0.92],
+    Amsterdam: ["EUR", "nl-NL", 0.92],
+    Stockholm: ["SEK", "sv-SE", 10.5],
+    Warsaw: ["PLN", "pl-PL", 4],
+    Dubai: ["AED", "en-AE", 3.67],
+    Singapore: ["SGD", "en-SG", 1.35],
+    Tokyo: ["JPY", "ja-JP", 150],
+    Sydney: ["AUD", "en-AU", 1.5],
+    Melbourne: ["AUD", "en-AU", 1.5],
+    Bengaluru: ["INR", "en-IN", 83],
+    Seoul: ["KRW", "ko-KR", 1350],
+    "Hong Kong": ["HKD", "en-HK", 7.8],
+    Jakarta: ["IDR", "id-ID", 16000],
+  };
+  const TITLES = {
+    People: ["People Partner", "HRBP", "People Ops Analyst", "Total Rewards Manager"],
+    "Product Engineering": ["Staff Engineer", "Engineering Manager", "Software Engineer", "Principal Engineer", "QA Lead"],
+    Platform: ["Staff Engineer", "SRE", "Platform Engineer", "Engineering Manager"],
+    Compensation: ["Payroll Analyst", "Payroll Ops Lead", "Benefits Specialist"],
+    Talent: ["Recruiter", "Sourcer", "Talent Partner"],
+    Finance: ["Financial Analyst", "Controller", "FP&A Manager"],
+    Legal: ["Counsel", "Compliance Officer", "Paralegal"],
+    Sales: ["Account Executive", "Sales Manager", "Solutions Consultant"],
+    "Customer Success": ["CSM", "Support Lead", "Onboarding Manager"],
+    Operations: ["Ops Manager", "Workplace Lead", "Program Manager"],
+    Security: ["Security Engineer", "GRC Analyst", "SOC Analyst"],
+    Data: ["Data Engineer", "Analytics Engineer", "Data Scientist"],
+  };
+
+  function pick(list, n) {
+    return list[n % list.length];
+  }
+
+  function usdBand(title) {
+    if (/chief|ceo/i.test(title)) return 320000;
+    if (/^vp /i.test(title)) return 220000;
+    if (/principal|staff/i.test(title)) return 168000;
+    if (/manager|lead|partner|controller|counsel/i.test(title)) return 124000;
+    return 86000;
+  }
+
+  function localSalary(title, city, i) {
+    const [currency, locale, scale] = CITY_PAY[city] || ["USD", "en-US", 1];
+    const amount = Math.round((usdBand(title) + (i % 17) * 1400) * scale);
+    return {
+      amount,
+      currency,
+      display: new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).format(amount),
+    };
+  }
+
+  function credentialsFor(org, i) {
+    const pool = CREDENTIALS[org] || CREDENTIALS.People;
+    const count = 1 + (i % 3);
+    return Array.from({ length: count }, (_, offset) => pick(pool, i + offset * 5));
+  }
+
+  function socialFor(first, last, i) {
+    const slug = `${first}-${last}${i > 40 ? i : ""}`.toLowerCase().replace(/\s+/g, "");
+    const handle = `${first}${last}${i > 40 ? i : ""}`.toLowerCase().replace(/\s+/g, "");
+    return {
+      linkedin: `https://www.linkedin.com/in/${slug}`,
+      linkedinHandle: slug,
+      x: `https://x.com/${handle}`,
+      xHandle: `@${handle}`,
+    };
+  }
+
+  function seedEmployees(count) {
+    const people = [
+      { first: "Priya", last: "Nair", female: true, title: "People Partner", org: "People", city: "London", region: "EMEA", manager: "Amelia Chen" },
+      { first: "Jonas", last: "Weber", female: false, title: "VP Engineering", org: "Product Engineering", city: "Berlin", region: "EMEA", manager: "Amelia Chen" },
+      { first: "Marcus", last: "Holm", female: false, title: "Staff Engineer", org: "Platform", city: "Stockholm", region: "EMEA", manager: "Jonas Weber" },
+      { first: "Amelia", last: "Chen", female: true, title: "Chief Executive Officer", org: "Office of the CEO", city: "London", region: "EMEA", manager: "—" },
+      { first: "Leila", last: "Haddad", female: true, title: "Staff Engineer", org: "Platform", city: "Paris", region: "EMEA", manager: "Jonas Weber" },
+      { first: "Sofia", last: "Alvarez", female: true, title: "Payroll Analyst", org: "Compensation", city: "Madrid", region: "EMEA", manager: "Priya Nair" },
+      { first: "Kenji", last: "Sato", female: false, title: "Engineering Manager", org: "Product Engineering", city: "London", region: "EMEA", manager: "Jonas Weber" },
+      { first: "Nora", last: "Ibrahim", female: true, title: "Recruiter", org: "Talent", city: "Dubai", region: "EMEA", manager: "Priya Nair" },
+      { first: "Hannah", last: "Smith", female: true, title: "People Ops Analyst", org: "People", city: "Chicago", region: "AMER", manager: "Priya Nair" },
+      { first: "Owen", last: "Smythe", female: false, title: "Staff Engineer", org: "Product Engineering", city: "London", region: "EMEA", manager: "Jonas Weber" },
+      { first: "Aisha", last: "Johnson", female: true, title: "Recruiter", org: "Talent", city: "New York", region: "AMER", manager: "Priya Nair" },
+      { first: "James", last: "Moore", female: false, title: "Financial Analyst", org: "Finance", city: "Austin", region: "AMER", manager: "Amelia Chen" },
+      { first: "Mia", last: "Jackson", female: true, title: "CSM", org: "Customer Success", city: "Seattle", region: "AMER", manager: "Priya Nair" },
+      { first: "Diego", last: "Cruze", female: false, title: "Account Executive", org: "Sales", city: "Mexico City", region: "AMER", manager: "Amelia Chen" },
+      { first: "Camila", last: "Hernandez", female: true, title: "Payroll Analyst", org: "Compensation", city: "São Paulo", region: "AMER", manager: "Sofia Alvarez" },
+      { first: "Erik", last: "Pohl", female: false, title: "SRE", org: "Platform", city: "Berlin", region: "EMEA", manager: "Jonas Weber" },
+      { first: "Chloe", last: "Dennis", female: true, title: "Talent Partner", org: "Talent", city: "Dublin", region: "EMEA", manager: "Priya Nair" },
+      { first: "Samuel", last: "Mayfield", female: false, title: "Engineering Manager", org: "Product Engineering", city: "Denver", region: "AMER", manager: "Jonas Weber" },
+      { first: "Elena", last: "Anderson", female: true, title: "HRBP", org: "People", city: "Toronto", region: "AMER", manager: "Priya Nair" },
+      { first: "Lukas", last: "Bergman", female: false, title: "Data Scientist", org: "Data", city: "Stockholm", region: "EMEA", manager: "Jonas Weber" },
+      { first: "Olivia", last: "Reddings", female: true, title: "Counsel", org: "Legal", city: "London", region: "EMEA", manager: "Amelia Chen" },
+      { first: "Noah", last: "Lewis", female: false, title: "Security Engineer", org: "Security", city: "Sydney", region: "APAC", manager: "Jonas Weber" },
+      { first: "Freya", last: "Olson", female: true, title: "Ops Manager", org: "Operations", city: "Stockholm", region: "EMEA", manager: "Priya Nair" },
+      { first: "Daniel", last: "Miller", female: false, title: "Controller", org: "Finance", city: "Chicago", region: "AMER", manager: "Amelia Chen" },
+      { first: "Emma", last: "Brown", female: true, title: "Onboarding Manager", org: "Customer Success", city: "New York", region: "AMER", manager: "Priya Nair" },
+      { first: "Theo", last: "Daniels", female: false, title: "Platform Engineer", org: "Platform", city: "Austin", region: "AMER", manager: "Jonas Weber" },
+      { first: "Ava", last: "Watkson", female: true, title: "Analytics Engineer", org: "Data", city: "Seattle", region: "AMER", manager: "Jonas Weber" },
+      { first: "Alexander", last: "Russell", female: false, title: "Sales Manager", org: "Sales", city: "London", region: "EMEA", manager: "Amelia Chen" },
+      { first: "Lina", last: "Williams", female: true, title: "Benefits Specialist", org: "Compensation", city: "Toronto", region: "AMER", manager: "Sofia Alvarez" },
+    ];
+
+    const out = [];
+    for (let i = 0; i < count; i += 1) {
+      const named = people[i];
+      const female = named ? named.female : i % 2 === 0;
+      const first = named ? named.first : pick(female ? FIRST_F : FIRST_M, i * 7 + 3);
+      const last = named ? named.last : pick(LAST, i * 13 + 5);
+      const region = named ? named.region : ["AMER", "EMEA", "APAC"][i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 2];
+      const meta = REGIONS[region];
+      const org = named ? named.org : pick(ORGS, i * 3);
+      const title = named ? named.title : pick(TITLES[org], i * 11);
+      const city = named ? named.city : pick(meta.cities, i * 17);
+      const id = `EMP-${String(100000 + i).padStart(6, "0")}`;
+      const genderPath = female ? "women" : "men";
+      const photoIdx = i % 99;
+      out.push({
+        id,
+        first,
+        last,
+        name: `${first} ${last}`,
+        email: `${first}.${last}${i > 40 ? i : ""}@aetherdynamics.com`.toLowerCase().replace(/\s+/g, ""),
+        title,
+        org,
+        city,
+        region,
+        status: named ? "Active" : i % 47 === 0 ? "Leave" : i % 211 === 0 ? "Contractor" : "Active",
+        manager: named ? named.manager : `${pick(FIRST_M, i + 2)} ${pick(LAST, i + 9)}`,
+        hired: 2016 + (i % 10),
+        timezone: pick(meta.tz, i),
+        phone: `+${region === "AMER" ? "1" : region === "EMEA" ? "44" : "65"} 555 ${String(1000 + (i % 9000)).padStart(4, "0")}`,
+        photo: `https://randomuser.me/api/portraits/${genderPath}/${photoIdx}.jpg`,
+        initials: `${first[0]}${last[0]}`.toUpperCase(),
+        department: named && named.org === "Office of the CEO" ? "Executive Office" : pick(DEPARTMENTS[org] || DEPARTMENTS.People, i * 5),
+        salary: localSalary(title, city, i),
+        credentials: credentialsFor(org, i),
+        social: socialFor(first, last, i),
+      });
+    }
+    return out;
+  }
+
+  const employees = seedEmployees(5280);
+  const counts = employees.reduce((acc, person) => {
+    acc[person.region] = (acc[person.region] || 0) + 1;
+    return acc;
+  }, {});
+
+  window.HR_DIRECTORY = {
+    employees,
+    total: employees.length,
+    counts,
+    cities: [...new Set(employees.map((person) => person.city))].sort(),
+    orgs: [...new Set(employees.map((person) => person.org))].sort(),
+  };
+})();

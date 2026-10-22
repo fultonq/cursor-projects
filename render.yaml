@@ -1,0 +1,20 @@
+# Render Blueprint — Aether HR demo
+# Static sites are on a global CDN: no region or compute plan.
+
+previews:
+  generation: automatic
+
+services:
+  - type: web
+    name: aether-hr
+    runtime: static
+    buildCommand: "true"
+    staticPublishPath: ./deploy/web
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: sameorigin
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
