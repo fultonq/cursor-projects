@@ -18,6 +18,9 @@ Captured from the live static demo (`python3 deploy/web/serve.py`, then Chrome h
 | Reset filters | [directory_reset.png](directory_reset.png) |
 | Ava Watkson profile | [directory_watkson_modal.png](directory_watkson_modal.png) |
 | Grid · 100 per page | [directory_grid_100.png](directory_grid_100.png) |
+| Priya profile with department, salary, credentials, social | [directory_priya_profile_fields.png](directory_priya_profile_fields.png) |
+| Ava profile extra fields | [directory_watkson_profile_fields.png](directory_watkson_profile_fields.png) |
+| Diego Cruze MXN salary | [directory_cruze_profile_fields.png](directory_cruze_profile_fields.png) |
 
 To recapture:
 
