@@ -470,8 +470,10 @@ label {
 .hr-modal-card {
   position: relative;
   z-index: 1;
-  width: min(520px, 92vw);
-  margin: 8vh auto;
+  width: min(560px, 92vw);
+  max-height: 84vh;
+  overflow: auto;
+  margin: 6vh auto;
   background: #fff;
   border-radius: 16px;
   padding: 1.25rem 1.4rem 1.4rem;

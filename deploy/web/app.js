@@ -372,6 +372,15 @@ function setProfileUrl(id) {
   }
 }
 
+function socialLinks(person) {
+  const { linkedin, linkedinHandle, x, xHandle } = person.social;
+  return `
+    <a class="dir-link" href="${linkedin}" target="_blank" rel="noopener noreferrer">${linkedinHandle}</a>
+    <span class="hr-sub" style="margin:0 0.35rem">·</span>
+    <a class="dir-link" href="${x}" target="_blank" rel="noopener noreferrer">${xHandle}</a>
+  `;
+}
+
 function openProfile(person, { syncUrl = true } = {}) {
   const modal = document.getElementById("dir-modal");
   if (!modal) return;
@@ -382,13 +391,17 @@ function openProfile(person, { syncUrl = true } = {}) {
       ${photoTag(person, 96)}
       <div>
         <h2 class="hr-h1" id="modal-name">${person.name}</h2>
-        <p class="hr-sub">${person.title} · ${person.org}</p>
+        <p class="hr-sub">${person.title} · ${person.department}</p>
         <p class="hr-sub">${person.city} · ${person.region} shard</p>
       </div>
     </div>
     <table class="hr-table">
       <tbody>
         <tr><td>Employee ID</td><td>${person.id}</td></tr>
+        <tr><td>Department</td><td>${person.department}</td></tr>
+        <tr><td>Salary</td><td>${person.salary.display} <small>${person.salary.currency}</small></td></tr>
+        <tr><td>Degree / Diploma / Certification(s)</td><td>${person.credentials.join(" · ")}</td></tr>
+        <tr><td>Social media</td><td>${socialLinks(person)}</td></tr>
         <tr><td>Email</td><td><a class="dir-link" href="mailto:${person.email}">${person.email}</a></td></tr>
         <tr><td>Phone</td><td>${person.phone}</td></tr>
         <tr><td>Manager</td><td>${managerCell(person.manager)}</td></tr>

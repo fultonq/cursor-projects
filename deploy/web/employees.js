@@ -35,6 +35,63 @@
     "People", "Product Engineering", "Platform", "Compensation", "Talent",
     "Finance", "Legal", "Sales", "Customer Success", "Operations", "Security", "Data",
   ];
+  const DEPARTMENTS = {
+    People: ["People Operations", "Total Rewards", "Employee Relations", "Learning & Development"],
+    "Product Engineering": ["Core Platform", "Mobile Apps", "Web Experience", "Quality Engineering"],
+    Platform: ["SRE", "Cloud Infrastructure", "Developer Experience"],
+    Compensation: ["Payroll Operations", "Benefits Administration", "Global Mobility"],
+    Talent: ["Talent Acquisition", "University Recruiting", "Employer Brand"],
+    Finance: ["FP&A", "Controllership", "Treasury"],
+    Legal: ["Corporate Legal", "Compliance", "Employment Law"],
+    Sales: ["Enterprise Sales", "Mid-Market", "Solutions Consulting"],
+    "Customer Success": ["Named Accounts", "Onboarding", "Support Operations"],
+    Operations: ["Workplace", "Program Management", "Business Operations"],
+    Security: ["Product Security", "GRC", "SOC"],
+    Data: ["Data Platform", "Analytics", "Machine Learning"],
+    "Office of the CEO": ["Executive Office"],
+  };
+  const CREDENTIALS = {
+    People: ["BA Human Resources", "CIPD Level 7", "SHRM-SCP"],
+    "Product Engineering": ["BSc Computer Science", "AWS Solutions Architect", "MSc Software Engineering"],
+    Platform: ["BEng Computer Engineering", "CKA (Kubernetes)", "Google Professional Cloud Architect"],
+    Compensation: ["BSc Accounting", "CPP (Certified Payroll Professional)", "Diploma in Compensation"],
+    Talent: ["BA Communications", "AIRS Certified Recruiter", "LinkedIn Recruiter Certification"],
+    Finance: ["BSc Finance", "CPA", "MBA"],
+    Legal: ["LLB", "Bar admission", "CIPP/E"],
+    Sales: ["BBA", "MEDDICC practitioner", "Salesforce Certified"],
+    "Customer Success": ["BA Business", "CCSP", "ITIL Foundation"],
+    Operations: ["BSc Operations Management", "PMP", "Lean Six Sigma Green Belt"],
+    Security: ["BSc Cybersecurity", "CISSP", "OSCP"],
+    Data: ["MSc Data Science", "Google Data Analytics Certificate", "dbt Analytics Engineer"],
+    "Office of the CEO": ["MBA Harvard", "BSc Economics", "ICD.D"],
+  };
+  const CITY_PAY = {
+    "New York": ["USD", "en-US", 1],
+    Austin: ["USD", "en-US", 1],
+    Chicago: ["USD", "en-US", 1],
+    Seattle: ["USD", "en-US", 1],
+    Denver: ["USD", "en-US", 1],
+    Toronto: ["CAD", "en-CA", 1.36],
+    "São Paulo": ["BRL", "pt-BR", 5.2],
+    "Mexico City": ["MXN", "es-MX", 17],
+    London: ["GBP", "en-GB", 0.78],
+    Dublin: ["EUR", "en-IE", 0.92],
+    Berlin: ["EUR", "de-DE", 0.92],
+    Paris: ["EUR", "fr-FR", 0.92],
+    Madrid: ["EUR", "es-ES", 0.92],
+    Amsterdam: ["EUR", "nl-NL", 0.92],
+    Stockholm: ["SEK", "sv-SE", 10.5],
+    Warsaw: ["PLN", "pl-PL", 4],
+    Dubai: ["AED", "en-AE", 3.67],
+    Singapore: ["SGD", "en-SG", 1.35],
+    Tokyo: ["JPY", "ja-JP", 150],
+    Sydney: ["AUD", "en-AU", 1.5],
+    Melbourne: ["AUD", "en-AU", 1.5],
+    Bengaluru: ["INR", "en-IN", 83],
+    Seoul: ["KRW", "ko-KR", 1350],
+    "Hong Kong": ["HKD", "en-HK", 7.8],
+    Jakarta: ["IDR", "id-ID", 16000],
+  };
   const TITLES = {
     People: ["People Partner", "HRBP", "People Ops Analyst", "Total Rewards Manager"],
     "Product Engineering": ["Staff Engineer", "Engineering Manager", "Software Engineer", "Principal Engineer", "QA Lead"],
@@ -52,6 +109,41 @@
 
   function pick(list, n) {
     return list[n % list.length];
+  }
+
+  function usdBand(title) {
+    if (/chief|ceo/i.test(title)) return 320000;
+    if (/^vp /i.test(title)) return 220000;
+    if (/principal|staff/i.test(title)) return 168000;
+    if (/manager|lead|partner|controller|counsel/i.test(title)) return 124000;
+    return 86000;
+  }
+
+  function localSalary(title, city, i) {
+    const [currency, locale, scale] = CITY_PAY[city] || ["USD", "en-US", 1];
+    const amount = Math.round((usdBand(title) + (i % 17) * 1400) * scale);
+    return {
+      amount,
+      currency,
+      display: new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 0 }).format(amount),
+    };
+  }
+
+  function credentialsFor(org, i) {
+    const pool = CREDENTIALS[org] || CREDENTIALS.People;
+    const count = 1 + (i % 3);
+    return Array.from({ length: count }, (_, offset) => pick(pool, i + offset * 5));
+  }
+
+  function socialFor(first, last, i) {
+    const slug = `${first}-${last}${i > 40 ? i : ""}`.toLowerCase().replace(/\s+/g, "");
+    const handle = `${first}${last}${i > 40 ? i : ""}`.toLowerCase().replace(/\s+/g, "");
+    return {
+      linkedin: `https://www.linkedin.com/in/${slug}`,
+      linkedinHandle: slug,
+      x: `https://x.com/${handle}`,
+      xHandle: `@${handle}`,
+    };
   }
 
   function seedEmployees(count) {
@@ -118,6 +210,10 @@
         phone: `+${region === "AMER" ? "1" : region === "EMEA" ? "44" : "65"} 555 ${String(1000 + (i % 9000)).padStart(4, "0")}`,
         photo: `https://randomuser.me/api/portraits/${genderPath}/${photoIdx}.jpg`,
         initials: `${first[0]}${last[0]}`.toUpperCase(),
+        department: named && named.org === "Office of the CEO" ? "Executive Office" : pick(DEPARTMENTS[org] || DEPARTMENTS.People, i * 5),
+        salary: localSalary(title, city, i),
+        credentials: credentialsFor(org, i),
+        social: socialFor(first, last, i),
       });
     }
     return out;
